@@ -26,7 +26,7 @@ html {
 }
 
 body {
-  background: #FDFFFD;
+  background: #fdfffd;
   color: var(--foreground);
   font-family:
     "Inter",
@@ -84,30 +84,15 @@ body {
 }
 
 .navbar__logo-icon {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, var(--teal-primary), var(--teal-light));
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(42, 154, 173, 0.3);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
 }
 
 .navbar__logo-icon:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(42, 154, 173, 0.4);
-}
-
-.navbar__logo-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: none;
-  stroke: white;
-  stroke-width: 2.5;
 }
 
 .navbar__logo-text {
@@ -316,7 +301,7 @@ body {
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: #FDFFFD;
+  background: #fdfffd;
 }
 
 /* ===== BACKGROUND VIDEO ===== */
@@ -361,13 +346,21 @@ body {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 2rem;
   padding-top: 70px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 3rem;
   min-height: 100vh;
+}
+
+.nav__container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* LEFT CONTENT */
@@ -393,7 +386,7 @@ body {
 .hero__eyebrow {
   font-size: 30px;
   font-weight: 800;
-  color: var(--teal-primary);
+  color: var(--teal-dark);
   letter-spacing: 0.02em;
 }
 
@@ -413,7 +406,7 @@ body {
 }
 
 .hero__actions {
-  margin-top: 30px ;
+  margin-top: 30px;
 }
 
 .btn-waitlist {
@@ -493,7 +486,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative; 
+  position: relative;
 }
 
 @keyframes fadeInRight {
@@ -511,7 +504,7 @@ body {
   display: flex;
   justify-content: center;
   position: relative;
-  width: 100%; 
+  width: 100%;
   border-radius: 24px;
   overflow: hidden;
 }
