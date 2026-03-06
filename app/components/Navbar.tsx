@@ -47,21 +47,7 @@ export default function Navbar() {
               <circle cx="12" cy="12" r="2" fill="white" stroke="none" />
             </svg>
           </div>
-          <span className="navbar__logo-text">
-            Dolphin<span>Pay</span>
-          </span>
         </a>
-
-        {/* Desktop nav links */}
-        <ul className="navbar__links" role="list">
-          {NAV_LINKS.map((link) => (
-            <li key={link.label}>
-              <a href={link.href} className="navbar__link">
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
 
         {/* Launching badge & CTA (desktop) */}
         <div className="navbar__cta">
@@ -71,12 +57,6 @@ export default function Navbar() {
               Launching soon.
             </div>
           </div>
-          <a href="#waitlist" className="btn-nav-outline">
-            Log In
-          </a>
-          <a href="#waitlist" className="btn-nav-solid">
-            Join Waitlist
-          </a>
         </div>
 
         {/* Hamburger (mobile) */}
@@ -98,40 +78,12 @@ export default function Navbar() {
         role="dialog"
         aria-label="Mobile navigation"
       >
-        {NAV_LINKS.map((link) => (
-          <a
-            key={link.label}
-            href={link.href}
-            className="navbar__mobile-link"
-            onClick={() => setMenuOpen(false)}
-          >
-            {link.label}
-          </a>
-        ))}
-
         <div
           className="launching-badge"
           style={{ alignSelf: "flex-start", marginTop: "0.25rem" }}
         >
           <span className="launching-badge__dot" aria-hidden="true" />
           Launching soon.
-        </div>
-
-        <div className="navbar__mobile-cta">
-          <a
-            href="#waitlist"
-            className="btn-mobile-outline"
-            onClick={() => setMenuOpen(false)}
-          >
-            Log In
-          </a>
-          <a
-            href="#waitlist"
-            className="btn-mobile-solid"
-            onClick={() => setMenuOpen(false)}
-          >
-            Join Waitlist
-          </a>
         </div>
       </div>
     </>
