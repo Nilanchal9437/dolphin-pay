@@ -576,6 +576,10 @@ body {
     gap: 2rem;
   }
 
+  .hero__visual-video {
+    height: 250px !important;
+  }
+  
   .hero__content {
     align-items: center;
   }
