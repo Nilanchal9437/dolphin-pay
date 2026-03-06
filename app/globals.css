@@ -26,7 +26,7 @@ html {
 }
 
 body {
-  background: var(--background);
+  background: #FDFFFD;
   color: var(--foreground);
   font-family:
     "Inter",
@@ -311,12 +311,12 @@ body {
 
 /* ===== HERO SECTION ===== */
 .hero {
-  min-height: 100vh;
+  height: 100vh;
   position: relative;
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: linear-gradient(135deg, #dce3e8 0%, #e8ecef 40%, #d8e4e8 100%);
+  background: #FDFFFD;
 }
 
 /* ===== BACKGROUND VIDEO ===== */
@@ -324,8 +324,8 @@ body {
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 100vh !important;
-  /* height: 100%; */
+  /* height: 0vh !important; */
+  height: 100%;
   object-fit: cover !important;
   /* z-index: 0; */
   /* opacity: 0.12; */
@@ -408,15 +408,12 @@ body {
 .hero__description {
   font-size: 1.05rem;
   line-height: 1.75;
-  color: #4a7080;
+  color: #000000;
   max-width: 420px;
 }
 
 .hero__actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  margin-top: 30px ;
 }
 
 .btn-waitlist {
@@ -496,9 +493,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  z-index: 2;
-  animation: fadeInRight 0.8s 0.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+  position: relative; 
 }
 
 @keyframes fadeInRight {
@@ -513,9 +508,10 @@ body {
 }
 
 .hero__video-wrapper {
+  display: flex;
+  justify-content: center;
   position: relative;
-  width: 100%;
-  max-width: 560px;
+  width: 100%; 
   border-radius: 24px;
   overflow: hidden;
 }
@@ -524,25 +520,11 @@ body {
 .hero__video-wrapper::before {
   content: "";
   position: absolute;
-  inset: -8%;
-  background: radial-gradient(
-    ellipse,
-    rgba(42, 154, 173, 0.18) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
-  z-index: -1;
-  pointer-events: none;
 }
 
 .hero__visual-video {
-  width: 100%;
-  height: auto;
+  height: 450px !important;
   object-fit: cover;
-  border-radius: 24px;
-  display: block;
-  filter: drop-shadow(0 30px 60px rgba(13, 45, 58, 0.18));
-  animation: float 6s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -644,11 +626,6 @@ body {
 
   .hero__content {
     align-items: center;
-    order: 2;
-  }
-
-  .hero__visual {
-    order: 1;
   }
 
   .hero__description {

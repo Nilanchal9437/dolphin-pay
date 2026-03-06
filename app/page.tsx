@@ -9,15 +9,15 @@ export default function Home() {
       {/* ====== HERO SECTION ====== */}
       <section className="hero" aria-labelledby="hero-title">
         {/* Full-screen background video */}
-        <video
+        {/* <video
           className="hero__bg-video"
-          src="/dolphin-pay.mp4"
+          src="/dolphin-pay-bg.mp4"
           autoPlay
           loop
           muted
           playsInline
           aria-hidden="true"
-        />
+        /> */}
         <div className="hero__container">
           {/* LEFT — Content */}
           <div className="hero__content">
@@ -31,7 +31,7 @@ export default function Home() {
               digital lifestyle
             </h1>
 
-            <p className="hero__description">
+            <p className="hero__description" style={{ color: "#000000"}}>
               Seamlessly control your finances and experiences with a secure,
               elegant digital platform designed for your modern life.
             </p>
@@ -71,14 +71,14 @@ export default function Home() {
           {/* RIGHT — Video Visual */}
           <div className="hero__visual" aria-hidden="true">
             <div className="hero__video-wrapper">
-              {/* <video
+              <video
                 src="/dolphin-pay.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
                 className="hero__visual-video"
-              /> */}
+              />
             </div>
           </div>
         </div>
