@@ -24,13 +24,14 @@ export default function Home() {
             <p className="hero__eyebrow mt-4">Dolphin Pay (Dpay)</p>
 
             <h1 id="hero-title" className="hero__title_one">
-              Your lifestyle. 
+              Your lifestyle.
             </h1>
-             <h1 id="hero-title" className="hero__title_two">
+            <h1 id="hero-title" className="hero__title_two">
               One powerful wallet.
             </h1>
-            <p className="hero__description" style={{ color: "#000000"}}>
-              Pay, shop, play and manage your digital world from one secure platform.
+            <p className="hero__description" style={{ color: "#000000" }}>
+              Pay, shop, play and manage your digital world from one secure
+              platform.
             </p>
 
             {/* CTA Buttons */}
@@ -78,10 +79,11 @@ export default function Home() {
               />
             </div>
           </div>
-
-          <div className="absolute bottom-0 left-0 bg-[#E8ECEF69] rounded-tr-md">
-            <p className="font-semibold text-sm md:text-lg mx-3">Powered by the Dolphin ecosystem</p>
-          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 bg-[#E8ECEF69] rounded-tr-md">
+          <p className="font-semibold text-sm md:text-lg mx-3">
+            Powered by the Dolphin ecosystem
+          </p>
         </div>
       </section>
     </>
