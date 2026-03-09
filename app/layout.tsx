@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Dolphin Pay (Dpay) — A New Way to Manage Your Digital Lifestyle",
+  title: "Dolphin Pay (D pay) — A New Way to Manage Your Digital Lifestyle",
   description:
     "Seamlessly control your finances and experiences with Dolphin Pay — a secure, elegant digital platform designed for your modern life.",
   keywords: [
