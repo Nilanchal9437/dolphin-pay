@@ -39,7 +39,7 @@ export default function Home() {
               {/* Outer glow ring */}
               <button
                 id="join-waitlist-cta"
-                className="relative p-[2px] rounded-full cursor-pointer transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
+                className="p-[2px] rounded-full cursor-pointer transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
                 style={{
                   background:
                     "linear-gradient(135deg, #7dd8cc, #a8ede3, #5fc9bb, #9fe3d8)",
@@ -80,7 +80,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 bg-[#E8ECEF69] rounded-tr-md">
+        <div className="fixed bottom-0 left-0 bg-[#E8ECEF69] rounded-tr-md z-50">
           <p className="font-semibold text-sm md:text-lg mx-3">
             Powered by the Dolphin ecosystem
           </p>

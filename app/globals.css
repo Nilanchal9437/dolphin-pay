@@ -607,6 +607,15 @@ body {
   .hero__image-wrapper {
     max-width: 380px;
   }
+
+  .hero__title_one {
+  font-size: clamp(4rem, 3vw, 4rem); 
+}
+
+.hero__title_two {
+  font-size: clamp(4rem, 3vw, 4rem); 
+}
+
 }
 
 @media (max-width: 768px) {
