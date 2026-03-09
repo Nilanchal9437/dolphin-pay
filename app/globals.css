@@ -219,7 +219,7 @@ body {
 /* mobile menu */
 .navbar__mobile-menu {
   position: fixed;
-  top: 70px;
+  top: 100px;
   left: 0;
   right: 0;
   background: rgba(232, 236, 239, 0.406);
