@@ -82,7 +82,7 @@ export default function Home() {
         </div>
         <div className="fixed bottom-0 left-0 bg-[#E8ECEF69] rounded-tr-md z-50">
           <p className="font-semibold text-sm md:text-lg mx-3">
-            Powered by the Dolphin ecosystem
+            Powered by Dolphin Technologies ecosystem
           </p>
         </div>
       </section>
