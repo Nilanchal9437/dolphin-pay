@@ -29,7 +29,7 @@ export default function Navbar() {
           {/* Logo */}
           <a href="/" className="navbar__logo" aria-label="Dolphin Pay Home">
             <div className="navbar__logo-icon">
-              <Image src="/logo.png" alt="logo" height={100} width={100} />
+              <Image src="/logo.png" alt="logo" height={150} width={150} />
             </div>
           </a>
 

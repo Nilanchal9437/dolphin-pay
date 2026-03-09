@@ -23,17 +23,14 @@ export default function Home() {
           <div className="hero__content">
             <p className="hero__eyebrow mt-4">Dolphin Pay (Dpay)</p>
 
-            <h1 id="hero-title" className="hero__title">
-              A new way to
-              <br />
-              manage your
-              <br />
-              digital lifestyle
+            <h1 id="hero-title" className="hero__title_one">
+              Your lifestyle. 
             </h1>
-
+             <h1 id="hero-title" className="hero__title_two">
+              One powerful wallet.
+            </h1>
             <p className="hero__description" style={{ color: "#000000"}}>
-              Seamlessly control your finances and experiences with a secure,
-              elegant digital platform designed for your modern life.
+              Pay, shop, play and manage your digital world from one secure platform.
             </p>
 
             {/* CTA Buttons */}
@@ -80,6 +77,10 @@ export default function Home() {
                 className="hero__visual-video"
               />
             </div>
+          </div>
+
+          <div className="absolute bottom-0 left-0 bg-[#E8ECEF69] rounded-tr-md">
+            <p className="font-semibold text-sm md:text-lg mx-3">Powered by the Dolphin ecosystem</p>
           </div>
         </div>
       </section>

@@ -15,12 +15,6 @@
   --glass-border: rgba(255, 255, 255, 0.5);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -37,6 +31,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* ===== SCROLLBAR ===== */
@@ -59,11 +56,11 @@ body {
   right: 0;
   z-index: 1000;
   padding: 0 2rem;
-  height: 70px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(232, 236, 239, 0.411);  
+  background: rgba(232, 236, 239, 0.411);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   transition: all 0.3s ease;
@@ -85,8 +82,8 @@ body {
 }
 
 .navbar__logo-icon {
-  width: 40px;
-  height: 40px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -344,15 +341,23 @@ body {
 .hero__eyebrow {
   font-size: 30px;
   font-weight: 800;
-  color: var(--teal-dark);
+  color: #2c6176;
   letter-spacing: 0.02em;
 }
 
-.hero__title {
+.hero__title_one {
   font-size: clamp(5rem, 4.5vw, 5rem);
   font-weight: 800;
-  line-height: 1.1;
-  color: var(--teal-dark);
+  line-height: 0.9;
+  color: #2c6176;
+  letter-spacing: -0.03em;
+}
+
+.hero__title_two {
+  font-size: clamp(5rem, 4.5vw, 5rem);
+  font-weight: 800;
+  line-height: 0.9;
+  color: #f2a413;
   letter-spacing: -0.03em;
 }
 
@@ -493,10 +498,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.45rem 1.1rem 0.45rem 0.55rem;
+  padding: 1rem 1.3rem;
   background: linear-gradient(135deg, #f59e0b, #fbbf24);
   border-radius: 50px;
-  font-size: 0.82rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #7c2d00;
   box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
@@ -514,8 +519,8 @@ body {
 }
 
 .launching-badge__dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #7c2d00;
   opacity: 0.7;
@@ -578,7 +583,7 @@ body {
   .hero__visual-video {
     height: 250px !important;
   }
-  
+
   .hero__content {
     align-items: center;
   }
