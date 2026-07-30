@@ -1,5 +1,5 @@
-import EchoCash from "@/src/features/echoCash";
+import Ecocash from "@/src/features/ecocash";
 
-export default function EchoCashPage() {
-  return <EchoCash />;
+export default function EcocashPage() {
+  return <Ecocash />;
 }

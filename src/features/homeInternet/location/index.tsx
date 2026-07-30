@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams, redirect } from "next/navigation";
 import useDebounce from "@/src/hooks/useDebounce";
+import { FaCheck } from "react-icons/fa";
+import { LuX } from "react-icons/lu";
 import { checkCoverage } from "@/src/features/homeInternet/apis/checkCoverage";
 import { ServiceAvailability } from "@/src/types";
 
@@ -31,13 +33,16 @@ export default function AvailabilityChecker() {
   const [coverage, setCoverage] = useState<ServiceAvailability | null>(null);
 
   const debouncedQuery = useDebounce(query, 300);
+  const sessionTokenRef = useRef<any>(null);
 
-  const handleSelect = (item: Address) => {
+  const handleSelect = async (item: Address) => {
     setQuery(item.description);
     setSelected(item);
     setShowDropdown(false);
     setIsChecking(false);
     setNoService(false);
+    const { AutocompleteSessionToken } = await (window as any).google.maps.importLibrary("places");
+    sessionTokenRef.current = new AutocompleteSessionToken();
   };
 
   const checkAddress = async () => {
@@ -65,9 +70,6 @@ export default function AvailabilityChecker() {
   const router = useRouter();
   const search = useSearchParams();
 
-  const getCity = (prediction: any): string => {
-    return prediction.structured_formatting.secondary_text.split(",")[0];
-  };
   useEffect(() => {
     if (!debouncedQuery) {
       setSuggestions([]);
@@ -79,30 +81,38 @@ export default function AvailabilityChecker() {
 
     setIsFetchingSuggestions(true);
 
-    const service = new (
-      window as any
-    ).google.maps.places.AutocompleteService();
+    (async () => {
+      try {
+        const { AutocompleteSuggestion, AutocompleteSessionToken } = await (
+          window as any
+        ).google.maps.importLibrary("places");
 
-    service.getPlacePredictions(
-      {
-        input: debouncedQuery,
-        types: ["address"],
-        componentRestrictions: { country: "zw" }, // 🇿🇼 restriction
-      },
-      (predictions: any, status: string) => {
-        if (status === "OK" && predictions) {
-          const sugession = predictions.map((items: any) => ({
-            ...items,
-            city: `${getCity(items)}`,
-          }));
-
-          setSuggestions([...sugession]);
-        } else {
-          setSuggestions([]);
+        if (!sessionTokenRef.current) {
+          sessionTokenRef.current = new AutocompleteSessionToken();
         }
+
+        const { suggestions: results } = await AutocompleteSuggestion.fetchAutocompleteSuggestions({
+          input: debouncedQuery,
+          includedRegionCodes: ["zw"],
+          sessionToken: sessionTokenRef.current,
+        });
+
+        const mapped = results.map((s: any) => {
+          const pred = s.placePrediction;
+          return {
+            description: pred.text.toString(),
+            place_id: pred.placeId,
+            city: pred.secondaryText?.toString().split(",")[0] ?? "",
+          };
+        });
+
+        setSuggestions(mapped);
+      } catch {
+        setSuggestions([]);
+      } finally {
         setIsFetchingSuggestions(false);
-      },
-    );
+      }
+    })();
   }, [debouncedQuery]);
 
   if (search.get("homeCategory")) {
@@ -165,7 +175,7 @@ export default function AvailabilityChecker() {
           {isChecking && (
             <div className="mt-6 rounded-lg border border-[#86EFAC] bg-[#DCFCE7] p-4 flex gap-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#BBF7D0]">
-                <span className="text-green-700 font-bold">✓</span>
+                <FaCheck className="text-green-700 text-lg" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-green-800">
@@ -190,7 +200,7 @@ export default function AvailabilityChecker() {
           {noService && (
             <div className="mt-6 rounded-lg border border-[#FCA5A5] bg-[#FEF2F2] p-4 flex gap-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FECACA]">
-                <span className="text-red-700 font-bold">✕</span>
+                <LuX className="text-red-700 text-lg" />
               </div>
 
               <div>
@@ -229,7 +239,7 @@ export default function AvailabilityChecker() {
                 if (isChecking) {
                   if (selected) {
                     router.push(
-                      `/home-internet/plan?homeCategory=${search.get("homeCategory")}&location=${selected.description}&services=${JSON.stringify(coverage?.available_service_types)}&coordinates=${JSON.stringify(coverage?.coordinates)}&city=${selected?.city}`,
+                      `/home-internet/plan?homeCategory=${search.get("homeCategory")}&location=${encodeURIComponent(coverage?.address ?? selected.description)}&services=${JSON.stringify(coverage?.available_service_types)}&coordinates=${JSON.stringify(coverage?.coordinates)}&city=${selected?.city}`,
                     );
                   }
                 } else {

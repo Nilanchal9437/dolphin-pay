@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { FaCheck } from "react-icons/fa";
 
 type Props = {
   id: string;
@@ -45,7 +46,7 @@ const ServiceCard: React.FC<Props> = ({
           ${selected ? "bg-[#F59E0B] border-[#F59E0B]" : "border-gray-300"}
         `}
       >
-        {selected && <span className="text-white text-xs font-bold">✓</span>}
+        {selected && <FaCheck className="text-white text-xs" />}
       </div>
 
       {/* Icon */}

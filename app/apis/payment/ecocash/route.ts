@@ -5,7 +5,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // ✅ get query params
     const { searchParams } = new URL(req.url);
 
     const paramsObject = Object.fromEntries(searchParams.entries());
@@ -18,7 +17,7 @@ export async function POST(req: NextRequest) {
         customer_name: body.customer_name,
         account_number: body.account_number,
         phone: body.phone,
-        webhook_url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/apis/payment/webhook?${searchParams.toString()}`,
+        webhook_url: `${process.env.API_BASE_URL}/apis/payment/webhook?${searchParams.toString()}`,
       },
       {
         headers: {

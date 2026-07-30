@@ -5,6 +5,7 @@ import { getTransaction } from "@/src/features/payment-success/apis/getTransacti
 import { TransactionResponse } from "@/src/types";
 import { useSearchParams } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
+import { BsStars } from "react-icons/bs";
 import { getSalesOrderName } from "@/src/features/businessInternet/apis/getSalesOrder";
 
 const PaymentSuccess = () => {
@@ -225,7 +226,7 @@ const PaymentSuccess = () => {
       ) : (
         <div className="mt-8 text-center">
           {paymentData?.status === "completed" ? (
-            <div className="text-8xl">🎉</div>
+            <div className="text-8xl text-[#f59e0b]"><BsStars /></div>
           ) : (
             ""
           )}
@@ -235,13 +236,13 @@ const PaymentSuccess = () => {
               ? paymentData?.status === "pending" ||
                 paymentData?.status === "processing"
                 ? "Your order is currently being processed"
-                : `Your order has been ${paymentData?.status}`
+                : `Your order could not be processed.`
               : "You're almost connected!"}
           </h3>
 
           <p className="mt-2 font-exo font-normal text-[16px] leading-[1.5] tracking-normal text-center mx-auto text-[#2C6176]">
             {paymentData?.status === "completed"
-              ? "Your order has been recived"
+              ? "Your order has been received"
               : ""}
           </p>
 
@@ -258,7 +259,7 @@ const PaymentSuccess = () => {
             >
               {paymentData?.status === "completed"
                 ? "A confirmation has been sent to your email."
-                : `You payment is ${paymentData?.status}`}
+                : `Transaction failed! Please check your payment details and try again.`}
             </span>
           </p>
 

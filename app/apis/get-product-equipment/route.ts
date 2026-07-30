@@ -7,7 +7,10 @@ export async function POST(req: NextRequest) {
 
     let response = await OddoAxios.post(
       `/json/2/product.category/search_read`,
-      { domain: [["parent_id.id", "=", parseInt(parentCategory)]] },
+      {
+        domain: [["parent_id.id", "=", parseInt(parentCategory)]],
+        fields: ["id", "name", "display_name", "x_studio_label"],
+      },
     ).then((res) => res.data);
 
     if (response) {
@@ -18,20 +21,26 @@ export async function POST(req: NextRequest) {
       // ✅ fetch products per category
       const productsResponse = await OddoAxios.post(
         `/json/2/product.template/search_read`,
-        { domain: [["product_variant_ids", "in", parseInt(productId)]] },
+        {
+          domain: [["product_variant_ids", "in", parseInt(productId)]],
+          fields: ["id", "name", "x_equipment_ids"],
+        },
       ).then((response) => response.data[0]);
 
-      let productAttributes = [];
+      let productAttributes: any[] = [];
 
       const equipmentIds = productsResponse?.x_equipment_ids;
 
       if (!equipmentIds || equipmentIds.length === 0) {
-        productAttributes = [{ ...productsResponse, equipments: [] }];
+        productAttributes = [];
       } else {
         // ✅ Step 1: Fetch attribute lines
         const equipments = await OddoAxios.post(
           `/json/2/product.product/search_read`,
-          { domain: [["id", "in", equipmentIds]] },
+          {
+            domain: [["id", "in", equipmentIds]],
+            fields: ["id", "name", "display_name", "list_price", "recurring_invoice", "valid_product_template_attribute_line_ids"],
+          },
         ).then((response) => response.data);
 
         const enrichedEquipments = await Promise.all(
@@ -48,6 +57,7 @@ export async function POST(req: NextRequest) {
               `/json/2/product.template.attribute.line/search_read`,
               {
                 domain: [["id", "in", attributeIds]],
+                fields: ["id", "attribute_id", "product_template_value_ids"],
               },
             ).then((res) => res.data);
 
@@ -65,6 +75,7 @@ export async function POST(req: NextRequest) {
                   `/json/2/product.template.attribute.value/search_read`,
                   {
                     domain: [["id", "in", attr.product_template_value_ids]],
+                    fields: ["id", "name", "attribute_id"],
                   },
                 ).then((res) => res.data);
 
@@ -84,6 +95,7 @@ export async function POST(req: NextRequest) {
                         values.map((v: any) => v.id),
                       ],
                     ],
+                    fields: ["id", "display_name", "product_template_attribute_value_ids", "product_template_variant_value_ids"],
                   },
                 ).then((res) => res.data);
 

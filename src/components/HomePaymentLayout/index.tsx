@@ -9,12 +9,14 @@ import AppBar from "@/src/components/AppBar";
 import Container from "@/src/components/Container";
 import Stepper from "@/src/components/Stepper";
 import PlanSummary from "@/src/components/SummaryPlan";
-import { useState, Suspense } from "react";
+import { useState, Suspense, type ReactNode } from "react";
+import { FiHome, FiMapPin, FiPackage, FiWifi, FiDollarSign } from "react-icons/fi";
+import { LuRadio } from "react-icons/lu";
 interface ItemType {
   id: string;
   title: string;
   subtitle: string;
-  icon: string;
+  icon: ReactNode;
   value?: string;
 }
 
@@ -140,14 +142,14 @@ export default function Layout({
         id: "service",
         title: "Home Internet",
         subtitle: "Selected service",
-        icon: "🏠",
+        icon: <FiHome />,
       });
       if (search.get("location")) {
         values.push({
           id: "address",
           title: `${search.get("location")}`,
           subtitle: "Service address",
-          icon: "📍",
+          icon: <FiMapPin />,
         });
       }
       if (search.get("childCategoryName")) {
@@ -155,7 +157,7 @@ export default function Layout({
           id: `${search.get("childCategory")}`,
           title: `${search.get("childCategoryName")}`,
           subtitle: "Connection type",
-          icon: "📡",
+          icon: <LuRadio />,
         });
       }
 
@@ -165,7 +167,7 @@ export default function Layout({
           title: `${search.get("productName")}`,
           subtitle: `${formatPlan(data)}`,
           value: `$${search.get("price")}`,
-          icon: "📦",
+          icon: <FiPackage />,
         };
 
         price.push({
@@ -205,21 +207,43 @@ export default function Layout({
         }
       }
 
-      if (search.get("equipmentName") && search.get("equipmentId")) {
+      const eId = search.get("equipmentId");
+      const eName = search.get("equipmentName");
+      const eProdName = search.get("productNameEquipment");
+      const ePrice = search.get("priceEquipment");
+      const isV = (v: string | null) => !!v && v !== "null" && v !== "undefined";
+      const validEPrice = isV(ePrice) && !isNaN(Number(ePrice)) && Number(ePrice) > 0;
+      if (isV(eId) && isV(eName)) {
         values.push({
           id: `equipment`,
-          title: `${search.get("equipmentName")} ${search.get("productNameEquipment")}`,
+          title: `${isV(eProdName) ? eProdName : eName}`,
           subtitle: `Equipment`,
-          icon: `🛜`,
-          value: search.get("priceEquipment")
-            ? `$${search.get("priceEquipment")}`
-            : `Included`,
+          icon: <FiWifi />,
+          value: validEPrice ? `$${ePrice}` : `Included`,
         });
 
         price.push({
-          label: `${search.get("equipmentName")} ${search.get("productNameEquipment")} Equipment`,
-          value: Number(`${search.get("priceEquipment")}`),
-          type: search.get("priceEquipment") ? `price` : "Included",
+          label: `${isV(eProdName) ? eProdName : eName}`,
+          value: validEPrice ? Number(ePrice) : 0,
+          type: validEPrice ? `price` : "Included",
+        });
+      }
+
+      if (search.get("optionalFees")) {
+        const fees = JSON.parse(search.get("optionalFees") || "[]");
+        fees.forEach((fee: any) => {
+          values.push({
+            id: `fee-${fee.variantId}`,
+            title: fee.name,
+            subtitle: "Additional fee",
+            icon: <FiDollarSign />,
+            value: `$${Number(fee.price).toFixed(2)}`,
+          });
+          price.push({
+            label: fee.name,
+            value: Number(fee.price),
+            type: "fee",
+          });
         });
       }
 
@@ -233,7 +257,7 @@ export default function Layout({
         id: "service",
         title: "Home Internet",
         subtitle: "Selected service",
-        icon: "🏠",
+        icon: <FiHome />,
       });
 
       if (search.get("location")) {
@@ -241,7 +265,7 @@ export default function Layout({
           id: "address",
           title: `${search.get("location")}`,
           subtitle: "Service address",
-          icon: "📍",
+          icon: <FiMapPin />,
         });
       }
       if (search.get("childCategoryName")) {
@@ -249,7 +273,7 @@ export default function Layout({
           id: `${search.get("childCategory")}`,
           title: `${search.get("childCategoryName")}`,
           subtitle: "Connection type",
-          icon: "📡",
+          icon: <LuRadio />,
         });
       }
 
@@ -280,20 +304,42 @@ export default function Layout({
         }
       }
 
-      if (search.get("equipmentName") && search.get("equipmentId")) {
+      const eId2 = search.get("equipmentId");
+      const eName2 = search.get("equipmentName");
+      const eProdName2 = search.get("productNameEquipment");
+      const ePrice2 = search.get("priceEquipment");
+      const isV2 = (v: string | null) => !!v && v !== "null" && v !== "undefined";
+      const validEPrice2 = isV2(ePrice2) && !isNaN(Number(ePrice2)) && Number(ePrice2) > 0;
+      if (isV2(eId2) && isV2(eName2)) {
         values.push({
           id: `equipment`,
-          title: `${search.get("productNameEquipment")}`,
+          title: `${isV2(eProdName2) ? eProdName2 : eName2}`,
           subtitle: `Equipment`,
-          icon: `🛜`,
-          value: search.get("priceEquipment")
-            ? `$${search.get("priceEquipment")}`
-            : `Included`,
+          icon: <FiWifi />,
+          value: validEPrice2 ? `$${ePrice2}` : `Included`,
         });
         price.push({
-          label: `${search.get("productNameEquipment")}`,
-          value: Number(`${search.get("priceEquipment")}`),
-          type: search.get("priceEquipment") ? `price` : "Included",
+          label: `${isV2(eProdName2) ? eProdName2 : eName2}`,
+          value: validEPrice2 ? Number(ePrice2) : 0,
+          type: validEPrice2 ? `price` : "Included",
+        });
+      }
+
+      if (search.get("optionalFees")) {
+        const fees = JSON.parse(search.get("optionalFees") || "[]");
+        fees.forEach((fee: any) => {
+          values.push({
+            id: `fee-${fee.variantId}`,
+            title: fee.name,
+            subtitle: "Additional fee",
+            icon: <FiDollarSign />,
+            value: `$${Number(fee.price).toFixed(2)}`,
+          });
+          price.push({
+            label: fee.name,
+            value: Number(fee.price),
+            type: "fee",
+          });
         });
       }
 
@@ -330,14 +376,14 @@ export default function Layout({
         id: "service",
         title: "Home Internet",
         subtitle: "Selected service",
-        icon: "🏠",
+        icon: <FiHome />,
       });
       if (search.get("location")) {
         data.push({
           id: "address",
           title: `${search.get("location")}`,
           subtitle: "Service address",
-          icon: "📍",
+          icon: <FiMapPin />,
         });
       }
       if (search.get("childCategoryName")) {
@@ -345,7 +391,7 @@ export default function Layout({
           id: `${search.get("childCategory")}`,
           title: `${search.get("childCategoryName")}`,
           subtitle: "Connection type",
-          icon: "📡",
+          icon: <LuRadio />,
         });
       }
       if (
@@ -358,7 +404,7 @@ export default function Layout({
           title: `${search.get("productName")}`,
           subtitle: ``,
           value: `$${search.get("price")}`,
-          icon: "📦",
+          icon: <FiPackage />,
         });
         price.push({
           label: `${search.get("productName")}`,

@@ -24,7 +24,7 @@ export default function SecureCheckout() {
   const search = useSearchParams();
   const params = new URLSearchParams(search);
   const [submitLoader, setSubmitLoader] = useState<boolean>(false);
-  const [echocashNumber, setEchoCashNumber] = useState<string>("");
+  const [ecocashNumber, setEcocashNumber] = useState<string>("");
 
   const generateCustomer = async (
     email: string,
@@ -198,6 +198,22 @@ export default function SecureCheckout() {
         );
       }
 
+      if (search.get("optionalFees")) {
+        const fees = JSON.parse(search.get("optionalFees") || "[]");
+        fees.forEach((fee: any) =>
+          orderLines.push([
+            0,
+            0,
+            {
+              product_id: Number(fee.variantId),
+              product_uom_qty: 1,
+              price_unit: Number(fee.price),
+              name: fee.name,
+            },
+          ]),
+        );
+      }
+
       const planId = search.get("planId")
         ? Number(`${search.get("planId")}`)
         : undefined;
@@ -253,7 +269,7 @@ export default function SecureCheckout() {
     fullName?: string;
     email?: string;
     phone?: string;
-    echoCashNumber?: string;
+    ecocashNumber?: string;
   };
 
   const [form, setForm] = useState<FormData>({
@@ -346,8 +362,8 @@ export default function SecureCheckout() {
     const newErrors: FormErrors = {};
 
     if (selectedMethod === "EcoCash") {
-      if (!echocashNumber.trim()) {
-        newErrors.echoCashNumber = "Echocash Number is required!";
+      if (!ecocashNumber.trim()) {
+        newErrors.ecocashNumber = "Echocash Number is required!";
       }
     }
 
@@ -683,16 +699,16 @@ export default function SecureCheckout() {
                         <input
                           type="text"
                           onChange={(event) => {
-                            setEchoCashNumber(event.target.value);
+                            setEcocashNumber(event.target.value);
                             setErrors({});
                           }}
-                          value={echocashNumber}
+                          value={ecocashNumber}
                           placeholder="Enter EcoCash number"
                           className="w-full rounded-lg border border-[#D1D5DB] px-4 py-3 outline-none focus:border-[#2F5D6C]"
                         />
-                        {errors.echoCashNumber && (
+                        {errors.ecocashNumber && (
                           <p className="text-red-500 text-xs mt-1 mb-3">
-                            {errors.echoCashNumber}
+                            {errors.ecocashNumber}
                           </p>
                         )}
                       </div>
@@ -713,7 +729,7 @@ export default function SecureCheckout() {
                         setErrors(validationErrors);
                         return;
                       } else {
-                        params.set("echocashNumber", echocashNumber);
+                        params.set("ecocashNumber", ecocashNumber);
                         window.history.replaceState(
                           null,
                           "",

@@ -9,7 +9,8 @@ export async function POST(req: NextRequest) {
     const productsResponse = await OddoAxios.post(
       `/json/2/product.template/search_read`,
       {
-        domain: [["categ_id", "=", parseInt(homeCategory)]], // simpler + correct
+        domain: [["categ_id", "=", parseInt(homeCategory)]],
+        fields: ["id", "name", "description", "list_price", "categ_id", "valid_product_template_attribute_line_ids", "product_variant_ids", "product_variant_id", "recurring_invoice"],
       },
     ).then((res) => res.data);
 
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
             `/json/2/product.template.attribute.line/search_read`,
             {
               domain: [["id", "in", attributeIds]],
+              fields: ["id", "attribute_id", "product_template_value_ids"],
             },
           ).then((res) => res.data);
 
@@ -50,6 +52,7 @@ export async function POST(req: NextRequest) {
                   `/json/2/product.template.attribute.value/search_read`,
                   {
                     domain: [["id", "in", attr.product_template_value_ids]],
+                    fields: ["id", "name", "attribute_id"],
                   },
                 ).then((res) => res.data);
 

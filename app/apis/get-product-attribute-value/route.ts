@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
       `/json/2/product.template.attribute.value/search_read`,
       {
         domain: [["id", "in", attributeIds]],
+        fields: ["id", "name", "attribute_id"],
       },
     ).then((res) => res.data);
 

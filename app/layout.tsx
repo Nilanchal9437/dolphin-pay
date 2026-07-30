@@ -9,21 +9,31 @@ const exo = Exo({
   weight: ["400", "700"],
 });
 export const metadata: Metadata = {
-  title: "Dolphin Pay (D pay) — A New Way to Manage Your Digital Lifestyle",
+  title: "Dolphin Telecoms | Connectivity for Every Part of Your Life",
   description:
-    "Seamlessly control your finances and experiences with Dolphin Pay — a secure, elegant digital platform designed for your modern life.",
+    "Reliable internet and mobile services for home, business, and life on the move. Fibre, LTE, FWA, and mobile plans across Zimbabwe and South Africa.",
   keywords: [
-    "dolphin pay",
-    "dpay",
-    "digital payments",
-    "fintech",
-    "digital wallet",
+    "dolphin telecoms",
+    "fibre internet zimbabwe",
+    "LTE internet zimbabwe",
+    "home internet zimbabwe",
+    "business internet zimbabwe",
+    "mobile plans zimbabwe",
+    "broadband zimbabwe",
   ],
-  authors: [{ name: "Dolphin Pay" }],
+  authors: [{ name: "Dolphin Telecoms" }],
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-icon.png" }],
+  },
   openGraph: {
-    title: "Dolphin Pay — A New Way to Manage Your Digital Lifestyle",
+    title: "Dolphin Telecoms | Connectivity for Every Part of Your Life",
     description:
-      "Seamlessly control your finances and experiences with a secure, elegant digital platform designed for your modern life.",
+      "Reliable internet and mobile services for home, business, and life on the move. Fibre, LTE, FWA, and mobile plans across Zimbabwe and South Africa.",
     type: "website",
   },
 };
@@ -58,32 +68,12 @@ export default function RootLayout({
           async
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&loading=async&libraries=places`}
         ></Script>
-        {/* LiveChat Widget */}
-        <Script id="livechat-init" strategy="afterInteractive">
-          {`
-            window.__lc = window.__lc || {};
-            window.__lc.license = ${process.env.LIVE_CHAT_ID};
-            window.__lc.integration_name = "manual_channels";
-            window.__lc.product_name = "livechat";
-            ;(function(n,t,c){function i(n){return e._h?e._h.apply(null,n):e._q.push(n)}var e={_q:[],_h:null,_v:"2.0",on:function(){i(["on",c.call(arguments)])},once:function(){i(["once",c.call(arguments)])},off:function(){i(["off",c.call(arguments)])},get:function(){if(!e._h)throw new Error("[LiveChatWidget] You can't use getters before load.");return i(["get",c.call(arguments)])},call:function(){i(["call",c.call(arguments)])},init:function(){var n=t.createElement("script");n.async=!0,n.type="text/javascript",n.src="https://cdn.livechatinc.com/tracking.js",t.head.appendChild(n)}};!n.__lc.asyncInit&&e.init(),n.LiveChatWidget=n.LiveChatWidget||e}(window,document,[].slice));
-          `}
-        </Script>
-        <noscript>
-          <a
-            href={`https://www.livechat.com/chat-with/${process.env.LIVE_CHAT_ID}/`}
-            rel="nofollow"
-          >
-            Chat with us
-          </a>
-          , powered by{" "}
-          <a
-            href="https://www.livechat.com/?welcome"
-            rel="noopener nofollow"
-            target="_blank"
-          >
-            LiveChat
-          </a>
-        </noscript>
+        {/* Zendesk Widget */}
+        <Script
+          id="ze-snippet"
+          src="https://static.zdassets.com/ekr/snippet.js?key=253ea4cc-71ef-4038-896a-1bc27d12907b"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

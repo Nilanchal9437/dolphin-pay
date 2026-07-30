@@ -42,11 +42,19 @@ export default function ReviewPlan() {
       0,
     );
 
+    const optionalFeesRaw = search.get("optionalFees");
+    const optionalFees = optionalFeesRaw ? JSON.parse(optionalFeesRaw) : [];
+    const feesTotal = optionalFees.reduce(
+      (sum: number, f: any) => sum + Number(f.price),
+      0,
+    );
+
     const totalPrice =
       Number(search.get("price") || 0) +
       Number(search.get("voucherPrice") || 0) +
       Number(search.get("priceEquipment") || 0) +
-      totalVariantPrice;
+      totalVariantPrice +
+      feesTotal;
 
     return (
       <div className="w-full lg:max-w-3xl bg-white rounded-xl p-4 xl:p-8 shadow-sm">
@@ -81,12 +89,19 @@ export default function ReviewPlan() {
                 "Business Extras",
                 `${item.variant_name} - $${Number(item.variant_price).toFixed(2)}`,
               ]),
-              [
-                "Equipment",
-                search.get("productNameEquipment")
-                  ? `${search.get("productNameEquipment")} - $${search.get("priceEquipment")}`
-                  : `${search.get("productNameEquipment")} (Included)`,
-              ],
+              ...((() => {
+                const eId = search.get("equipmentId");
+                const eName = search.get("productNameEquipment") || search.get("equipmentName");
+                const ePrice = search.get("priceEquipment");
+                const valid = (v: string | null) => !!v && v !== "null" && v !== "undefined";
+                const hasPrice = valid(ePrice) && !isNaN(Number(ePrice)) && Number(ePrice) > 0;
+                if (!valid(eId) || !valid(eName)) return [];
+                return [["Equipment", hasPrice ? `${eName} - $${ePrice}` : `${eName} (Included)`]];
+              })()),
+              ...optionalFees.map((fee: any) => [
+                "Fee",
+                `${fee.name} - $${Number(fee.price).toFixed(2)}`,
+              ]),
             ].map(([label, value], index) => (
               <div key={index} className="flex justify-between">
                 <span className="font-exo font-normal text-[14px] leading-[1] tracking-normal text-[#2C6176]">
@@ -109,7 +124,7 @@ export default function ReviewPlan() {
           </div>
           <div className="text-right">
             <p className="font-exo font-bold text-[20px] text-[#2F5D6C]">
-              ${totalPrice}.00
+              ${totalPrice.toFixed(2)}
             </p>
           </div>
         </div>

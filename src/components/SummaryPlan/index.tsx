@@ -24,16 +24,32 @@ export default function PlanSummary({
   currency = "$",
 }: PlanSummaryProps) {
   const [open, setOpen] = useState(true);
- const search = useSearchParams();
-  // ✅ Dynamic total calculation
+  const search = useSearchParams();
+
+  const hasInstallationFee = useMemo(() => {
+    const fees = search.get("optionalFees");
+    if (!fees) return false;
+    try {
+      return JSON.parse(fees).some((f: any) =>
+        f.name?.toLowerCase().includes("installation fee"),
+      );
+    } catch {
+      return false;
+    }
+  }, [search]);
+
   const total = useMemo(() => {
     return pricing.reduce((sum, item) => {
-      if (item.type === "price") return sum + item.value;
+      if (item.type === "price" || item.type === "fee") {
+        const v = Number(item.value);
+        return sum + (isNaN(v) ? 0 : v);
+      }
       return sum;
     }, 0);
   }, [pricing]);
 
-  const pricingLength = pricing.length - 1;
+  const filteredPricing = pricing.filter(item => item.type !== "Included");
+  const pricingLength = filteredPricing.length - 1;
 
   return (
     <div className="w-full bg-white rounded-xl shadow-md overflow-hidden">
@@ -87,19 +103,24 @@ export default function PlanSummary({
 
               {open && (
                 <div className="mt-4 space-y-2 text-sm">
-                  {pricing.map((item, index) => (
+                  {filteredPricing.map((item, index) => (
                     <div
                       key={index}
                       className="flex flex-col justify-between gap-2"
                     >
                       <div key={index} className="flex justify-between">
-                        <span>{item.label} Plan</span>
                         <span>
-                          {currency}
-                          {item.value}
+                          {item.type === "fee" ? item.label : `${item.label} Plan`}
+                        </span>
+                        <span>
+                          {isNaN(Number(item.value)) || item.value === 0 ? (
+                            <span className="px-2 bg-[#0CAB461A] text-[#0CAB46]">Included</span>
+                          ) : (
+                            <>{currency}{item.value}</>
+                          )}
                         </span>
                       </div>
-                      {pricingLength === index && (
+                      {pricingLength === index && !hasInstallationFee && (
                         <div className="flex justify-between">
                           <span>Installation</span>
                           <span className="px-2 bg-[#0CAB461A] text-[#0CAB46]">

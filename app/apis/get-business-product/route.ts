@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
       `/json/2/product.category/search_read`,
       {
         domain: [["parent_id.id", "=", parseInt(homeCategory)]],
+        fields: ["id", "name", "display_name", "x_studio_label"],
         limit: 20,
       },
     ).then((res) => res.data);
@@ -23,7 +24,8 @@ export async function POST(req: NextRequest) {
       const productsResponse = await Promise.allSettled(
         categoriesIds.map((id: number) =>
           OddoAxios.post(`/json/2/product.template/search_read`, {
-            domain: [["categ_id", "=", id]], // simpler + correct
+            domain: [["categ_id", "=", id]],
+            fields: ["id", "name", "description", "list_price", "categ_id", "valid_product_template_attribute_line_ids", "product_variant_ids", "product_variant_id", "recurring_invoice", "x_equipment_ids"],
           }),
         ),
       ).then(
@@ -53,6 +55,7 @@ export async function POST(req: NextRequest) {
                 `/json/2/product.template.attribute.line/search_read`,
                 {
                   domain: [["id", "in", attributeIds]],
+                  fields: ["id", "attribute_id", "product_template_value_ids"],
                 },
               ).then((res) => res.data);
 
@@ -70,6 +73,7 @@ export async function POST(req: NextRequest) {
                     `/json/2/product.template.attribute.value/search_read`,
                     {
                       domain: [["id", "in", attr.product_template_value_ids]],
+                      fields: ["id", "name", "attribute_id"],
                     },
                   ).then((res) => res.data);
 
@@ -89,6 +93,7 @@ export async function POST(req: NextRequest) {
                           values.map((v: any) => v.id),
                         ],
                       ],
+                      fields: ["id", "display_name", "product_template_attribute_value_ids", "product_template_variant_value_ids"],
                     },
                   ).then((res) => res.data);
 

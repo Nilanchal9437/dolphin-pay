@@ -1,12 +1,13 @@
 {
-  "name": "dolphin-pay",
+  "name": "sales-engine",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy": "opennextjs-cloudflare build && wrangler deploy"
   },
   "dependencies": {
     "axios": "^1.15.0",
@@ -20,6 +21,7 @@
     "uuid": "^14.0.0"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "latest",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

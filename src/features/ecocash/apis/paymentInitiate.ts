@@ -1,6 +1,6 @@
 import Axios from "@/src/libs/Axios";
 
-export type EchoCashPaymentResponse = {
+export type EcocashPaymentResponse = {
   success: boolean;
   transaction_id: string;
   payment_method: string;
@@ -11,7 +11,7 @@ export type EchoCashPaymentResponse = {
   message: string;
 };
 
-export const echoCashPaymentInitiate = async ({
+export const ecocashPaymentInitiate = async ({
   amount,
   customer_name,
   account_number,
@@ -23,7 +23,7 @@ export const echoCashPaymentInitiate = async ({
   phone: string;
   amount: number;
   param: string;
-}): Promise<{ status: boolean; data: EchoCashPaymentResponse | null }> => {
+}): Promise<{ status: boolean; data: EcocashPaymentResponse | null }> => {
   try {
     const response = await Axios.post(`/apis/payment/ecocash?${param}`, {
       amount,
@@ -38,7 +38,7 @@ export const echoCashPaymentInitiate = async ({
       return { status: false, data: null };
     }
   } catch (error) {
-    console.error("Error echocash payment initiate:", error);
+    console.error("Error ecocash payment initiate:", error);
     return { status: false, data: null };
   }
 };

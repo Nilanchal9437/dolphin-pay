@@ -18,10 +18,10 @@ export async function POST(req: NextRequest) {
         customer_name: body.customer_name,
         account_number: body.account_number,
         phone: body.phone,
-        webhook_url: `https://dolphin-pay.vercel.app/apis/payment/webhook?${searchParams.toString()}`,
+        webhook_url: `${process.env.API_BASE_URL}/apis/payment/webhook?${searchParams.toString()}`,
         customer_email: body.customer_email,
         currency: body.currency,
-        return_url: `https://dolphin-pay.vercel.app/payment-success/zimswitch?${paramsObject.toString()}`,
+        return_url: `${process.env.API_BASE_URL}/payment-success/zimswitch?${searchParams.toString()}`,
       },
       {
         headers: {
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error("echocash API failed!", error);
+    console.error("zimswitch API failed!", error);
     return NextResponse.json(
       { error: "Payment initiation failed" },
       { status: 500 },

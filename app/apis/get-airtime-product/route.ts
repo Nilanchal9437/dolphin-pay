@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
     if (response) {
       return NextResponse.json(
         {
-          message: "Oddo product home categories fetch successful",
+          message: "successful",
           data: response.sort((a: any, b: any) => a.id - b.id),
         },
         { status: 200 },
@@ -146,14 +146,14 @@ export async function POST(req: NextRequest) {
     } else {
       return NextResponse.json(
         {
-          message: "Oddo product home categories fetch failed",
+          message: "home categories fetch failed",
           data: response,
         },
         { status: 500 },
       );
     }
   } catch (error) {
-    console.error("Error in Oddo product home categories API route:", error);
+    console.error("Error in home categories API route:", error);
     return NextResponse.json(
       { message: "Something went wrong", data: null },
       { status: 500 },

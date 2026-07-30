@@ -6,7 +6,10 @@ export async function POST(req: NextRequest) {
     const { homeCategory, services } = await req.json();
     let response = await OddoAxios.post(
       `/json/2/product.category/search_read`,
-      { domain: [["parent_id.id", "=", parseInt(homeCategory)]] },
+      {
+        domain: [["parent_id.id", "=", parseInt(homeCategory)]],
+        fields: ["id", "name", "display_name", "x_studio_label"],
+      },
     ).then((res) => res.data);
 
     if (services.length > 0) {
@@ -30,7 +33,8 @@ export async function POST(req: NextRequest) {
       const productsResponse = await Promise.allSettled(
         categoriesIds.map((id: number) =>
           OddoAxios.post(`/json/2/product.template/search_read`, {
-            domain: [["categ_id", "=", id]], // simpler + correct
+            domain: [["categ_id", "=", id]],
+            fields: ["id", "name", "description", "list_price", "categ_id", "valid_product_template_attribute_line_ids", "product_variant_ids", "product_variant_id", "recurring_invoice", "x_equipment_ids"],
           }),
         ),
       ).then(
@@ -60,6 +64,7 @@ export async function POST(req: NextRequest) {
                 `/json/2/product.template.attribute.line/search_read`,
                 {
                   domain: [["id", "in", attributeIds]],
+                  fields: ["id", "attribute_id", "product_template_value_ids"],
                 },
               ).then((res) => res.data);
 
@@ -77,6 +82,7 @@ export async function POST(req: NextRequest) {
                     `/json/2/product.template.attribute.value/search_read`,
                     {
                       domain: [["id", "in", attr.product_template_value_ids]],
+                      fields: ["id", "name", "attribute_id"],
                     },
                   ).then((res) => res.data);
 
@@ -96,6 +102,7 @@ export async function POST(req: NextRequest) {
                           values.map((v: any) => v.id),
                         ],
                       ],
+                      fields: ["id", "display_name", "product_template_attribute_value_ids", "product_template_variant_value_ids"],
                     },
                   ).then((res) => res.data);
 
@@ -121,7 +128,7 @@ export async function POST(req: NextRequest) {
 
                   return {
                     ...attr,
-                    values, // 👈 attach here
+                    values, 
                   };
                 }),
               );
@@ -143,22 +150,27 @@ export async function POST(req: NextRequest) {
     if (response) {
       return NextResponse.json(
         {
-          message: "Oddo product home categories fetch successful",
-          data: response.sort((a: any, b: any) => a.id - b.id),
+          message: "successful",
+          data: response.sort((a: any, b: any) => {
+            const PRIORITY: Record<string, number> = { fiber: 0, fibre: 0, fwa: 1, lte: 2 };
+            const aPriority = PRIORITY[(a.name ?? "").toLowerCase()] ?? 99;
+            const bPriority = PRIORITY[(b.name ?? "").toLowerCase()] ?? 99;
+            return aPriority - bPriority;
+          }),
         },
         { status: 200 },
       );
     } else {
       return NextResponse.json(
         {
-          message: "Oddo product home categories fetch failed",
+          message: "home categories fetch failed",
           data: response,
         },
         { status: 500 },
       );
     }
   } catch (error) {
-    console.error("Error in Oddo product home categories API route:", error);
+    console.error("Error in home categories API route:", error);
     return NextResponse.json(
       { message: "Something went wrong", data: null },
       { status: 500 },

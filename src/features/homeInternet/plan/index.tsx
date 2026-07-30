@@ -323,12 +323,40 @@ export default function Plan() {
                         return (
                           <div
                             key={plan.id}
-                            className={`relative border rounded-xl p-5 cursor-pointer transition 
+                            className={`relative border rounded-xl p-5 cursor-pointer transition
                         ${
                           isProductSelected
                             ? "border-[#f59e0b] bg-[#fff7ed]"
                             : "border-[#e5e7eb] bg-white"
                         }`}
+                            onClick={() => {
+                              setSelected(plan.product_variant_id[0].toString());
+                              setPrice(plan.list_price);
+                              if (plan.recurring_invoice) {
+                                params.set("planId", "1");
+                              }
+                              params.set("product", plan.product_variant_id[0].toString());
+                              params.set("price", plan.list_price.toString());
+                              params.set("productName", `${plan?.product_variant_id[1]}`);
+                              params.delete("attribute");
+                              if (plan?.attributes?.length) {
+                                const attribute = plan?.attributes.map((item) => item.values[0].id);
+                                const variant = plan?.attributes.map((item) => ({
+                                  variant_id: item.values[0].variant_id,
+                                  variant_name: item.values[0].variant_name,
+                                }));
+                                setSelectedAttribute(attribute);
+                                setSelectedVariant(variant);
+                                params.set("attribute", JSON.stringify([...attribute]));
+                                params.set("variant", JSON.stringify([...variant]));
+                              } else {
+                                setSelectedAttribute([]);
+                                setSelectedVariant([]);
+                                params.delete("attribute");
+                                params.delete("variant");
+                              }
+                              window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+                            }}
                           >
                             {/* {plan.popular && (
                               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#f59e0b] text-white text-xs px-3 py-1 rounded-full">
@@ -350,62 +378,6 @@ export default function Plan() {
                                       "border-[#d1d5db]": !isProductSelected,
                                     },
                                   )}
-                                  onClick={() => {
-                                    setSelected(
-                                      plan.product_variant_id[0].toString(),
-                                    );
-                                    setPrice(plan.list_price);
-                                    if (plan.recurring_invoice) {
-                                      params.set("planId", "1");
-                                    }
-                                    params.set(
-                                      "product",
-                                      plan.product_variant_id[0].toString(),
-                                    );
-                                    params.set(
-                                      "price",
-                                      plan.list_price.toString(),
-                                    );
-                                    params.set(
-                                      "productName",
-                                      `${plan?.product_variant_id[1]}`,
-                                    );
-                                    params.delete("attribute");
-                                    if (plan?.attributes?.length) {
-                                      const attribute = plan?.attributes.map(
-                                        (item) => item.values[0].id,
-                                      );
-
-                                      const variant = plan?.attributes.map(
-                                        (item) => ({
-                                          variant_id: item.values[0].variant_id,
-                                          variant_name:
-                                            item.values[0].variant_name,
-                                        }),
-                                      );
-
-                                      setSelectedAttribute(attribute);
-                                      setSelectedVariant(variant);
-                                      params.set(
-                                        "attribute",
-                                        JSON.stringify([...attribute]),
-                                      );
-                                      params.set(
-                                        "variant",
-                                        JSON.stringify([...variant]),
-                                      );
-                                    } else {
-                                      setSelectedAttribute([]); // reset attribute selection when switching categories
-                                      setSelectedVariant([]); // reset variant selection when switching categories
-                                      params.delete("attribute");
-                                      params.delete("variant");
-                                    }
-                                    window.history.replaceState(
-                                      null,
-                                      "",
-                                      `${window.location.pathname}?${params.toString()}`,
-                                    );
-                                  }}
                                 >
                                   {isProductSelected && (
                                     <FaCheck className="w-3 h-3 text-white" />
@@ -415,11 +387,9 @@ export default function Plan() {
                             </div>
 
                             <p className="text-[#111827] font-medium mb-3">
-                              {isProductSelected
-                                ? price
-                                  ? `$${price}/ mo`
-                                  : "Select to see pricing"
-                                : "Select to see pricing"}
+                              {isProductSelected && price
+                                ? `$${price}/ mo`
+                                : `$${plan.list_price}/ mo`}
                             </p>
 
                             <hr className="mb-3" />
@@ -453,7 +423,8 @@ export default function Plan() {
                                         <li
                                           key={i}
                                           className="flex items-center gap-2 ml-4 pr-3 cursor-pointer w-full"
-                                          onClick={() => {
+                                          onClick={(e) => {
+                                            e.stopPropagation();
                                             if (isProductSelected) {
                                               setPrice(
                                                 plan.list_price +
@@ -492,7 +463,7 @@ export default function Plan() {
                                                 },
                                               )}
                                             >
-                                              {isSelected ? "✓" : ""}
+                                              {isSelected ? <FaCheck /> : null}
                                             </span>
                                             <div className="flex items-center justify-between w-[92%]">
                                               <p>{value.name}</p>

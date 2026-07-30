@@ -44,6 +44,10 @@ function Connect() {
     getCategories();
   }, []);
 
+  const hasMobile = categories.some((c) =>
+    c.name.toLocaleLowerCase().includes("mobile"),
+  );
+
   const services = [
     ...categories
       .filter(
@@ -75,6 +79,19 @@ function Connect() {
             ? "/business-internet"
             : "/mobile-internet",
       })),
+    ...(!loading && !hasMobile
+      ? [
+          {
+            id: "mobile-soon",
+            title: "Mobile",
+            description:
+              "Stay connected with flexible mobile plans and global eSIM across Zimbabwe, South Africa and beyond.",
+            icon: <FiSmartphone />,
+            link: "/mobile-internet",
+            disabled: true,
+          },
+        ]
+      : []),
   ];
 
   return (

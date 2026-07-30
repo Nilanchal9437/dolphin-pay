@@ -2,16 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { FaCheck } from "react-icons/fa";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { EquipmentCategory } from "@/src/types";
 import cn from "classnames";
 
 export default function EquipmentVariant({
   categories,
+  onEquipmentChange,
 }: {
   categories: EquipmentCategory[];
+  onEquipmentChange?: (variantId: string, recurring: boolean) => void;
 }) {
   const search = useSearchParams();
+  const router = useRouter();
 
   const [selected, setSelected] = useState("");
   const [categoryOpen, setCategoryOpen] = useState({ name: "", id: "" });
@@ -62,6 +65,8 @@ export default function EquipmentVariant({
           params.set("productEquipment", `${product?.id}`);
           if (product.recurring_invoice) {
             params.set("planId", "1");
+          } else {
+            params.delete("planId");
           }
           params.set("priceEquipment", `${product?.list_price}`);
           params.set("productNameEquipment", `${product?.name}`);
@@ -80,12 +85,19 @@ export default function EquipmentVariant({
             params.set("attributeEquipment", JSON.stringify([...attribute]));
             params.set("variantEquipment", JSON.stringify([...variant]));
           }
+          window.history.replaceState(
+            null,
+            "",
+            `${window.location.pathname}?${params.toString()}`,
+          );
+          onEquipmentChange?.(`${product?.id}`, !!product.recurring_invoice);
+        } else {
+          window.history.replaceState(
+            null,
+            "",
+            `${window.location.pathname}?${params.toString()}`,
+          );
         }
-        window.history.replaceState(
-          null,
-          "",
-          `${window.location.pathname}?${params.toString()}`,
-        );
       }
     }
   }, []);
@@ -136,7 +148,7 @@ export default function EquipmentVariant({
               <h2 className="font-semibold text-[#111827]">{category.name}</h2>
               {category.products.length > 0 ? (
                 <p className="text-sm text-[#6b7280]">
-                  High-speed, stable wired connection
+                  Stable wired connection
                 </p>
               ) : (
                 <p className="text-sm text-[#6b7280]">
@@ -167,6 +179,8 @@ export default function EquipmentVariant({
                     params.set("productEquipment", `${product?.id}`);
                     if (product.recurring_invoice) {
                       params.set("planId", "1");
+                    } else {
+                      params.delete("planId");
                     }
                     params.set("productNameEquipment", `${product?.name}`);
                     params.set("priceEquipment", `${product?.list_price}`);
@@ -222,82 +236,60 @@ export default function EquipmentVariant({
                   return (
                     <div
                       key={plan.id}
-                      className={`relative border rounded-xl p-5 cursor-pointer transition 
+                      className={`relative border rounded-xl p-5 cursor-pointer transition
                         ${
                           isSelected
                             ? "border-[#f59e0b] bg-[#fff7ed]"
                             : "border-[#e5e7eb] bg-white"
                         }`}
+                      onClick={() => {
+                        if (isSelected) return;
+                        const currentParams = new URLSearchParams(window.location.search);
+                        setSelected(plan.id.toString());
+                        setPrice(plan.list_price);
+                        currentParams.set("productEquipment", plan.id.toString());
+                        if (plan.recurring_invoice) {
+                          currentParams.set("planId", "1");
+                        } else {
+                          currentParams.delete("planId");
+                        }
+                        currentParams.set("priceEquipment", plan.list_price.toString());
+                        currentParams.set("productNameEquipment", `${plan?.name}`);
+                        currentParams.delete("attributeEquipment");
+                        if (plan?.attributes?.length) {
+                          const attribute = plan?.attributes.map(
+                            (item) => item.values[0].id,
+                          );
+                          const variant = plan?.attributes.map(
+                            (item) => ({
+                              variant_id: item.values[0].variant_id,
+                              variant_name: item.values[0].variant_name,
+                            }),
+                          );
+                          setSelectedAttribute(attribute);
+                          setSelectedVariant(variant);
+                          currentParams.set("attributeEquipment", JSON.stringify([...attribute]));
+                          currentParams.set("variantEquipment", JSON.stringify([...variant]));
+                        } else {
+                          setSelectedVariant([]);
+                          setSelectedAttribute([]);
+                          currentParams.delete("attributeEquipment");
+                          currentParams.delete("variantEquipment");
+                        }
+                        router.replace(`${window.location.pathname}?${currentParams.toString()}`, { scroll: false });
+                        onEquipmentChange?.(plan.id.toString(), !!plan.recurring_invoice);
+                      }}
                     >
-                      {/* {plan.popular && (
-                              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#f59e0b] text-white text-xs px-3 py-1 rounded-full">
-                                MOST POPULAR
-                              </span>
-                            )} */}
-
                       <div className="flex justify-between items-center mb-3">
                         <h3 className="text-lg font-semibold">{plan.name}</h3>
                         <div className="w-5">
                           <div
-                            className={`w-5 h-5 rounded-full border flex items-center justify-center 
+                            className={`w-5 h-5 rounded-full border flex items-center justify-center
                             ${
                               isSelected
                                 ? "bg-[#f59e0b] border-[#f59e0b]"
                                 : "border-[#d1d5db]"
                             }`}
-                            onClick={() => {
-                              setSelected(plan.id.toString());
-                              setPrice(plan.list_price);
-                              params.set(
-                                "productEquipment",
-                                plan.id.toString(),
-                              );
-                              if (plan.recurring_invoice) {
-                                params.set("planId", "1");
-                              }
-                              params.set(
-                                "priceEquipment",
-                                plan.list_price.toString(),
-                              );
-                              params.set(
-                                "productNameEquipment",
-                                `${plan?.name}`,
-                              );
-                              params.delete("attributeEquipment");
-                              if (plan?.attributes?.length) {
-                                const attribute = plan?.attributes.map(
-                                  (item) => item.values[0].id,
-                                );
-
-                                const variant = plan?.attributes.map(
-                                  (item) => ({
-                                    variant_id: item.values[0].variant_id,
-                                    variant_name: item.values[0].variant_name,
-                                  }),
-                                );
-
-                                setSelectedAttribute(attribute);
-                                setSelectedVariant(variant);
-                                params.set(
-                                  "attributeEquipment",
-                                  JSON.stringify([...attribute]),
-                                );
-                                params.set(
-                                  "variantEquipment",
-                                  JSON.stringify([...variant]),
-                                );
-                              } else {
-                                setSelectedVariant([]);
-                                setSelectedAttribute([]);
-                                params.delete("attributeEquipment");
-                                params.delete("variantEquipment");
-                              }
-                              window.history.replaceState(
-                                null,
-                                "",
-                                `${window.location.pathname}?${params.toString()}`,
-                              );
-                            }}
                           >
                             {isSelected && (
                               <FaCheck className="w-3 h-3 text-white" />
@@ -307,11 +299,11 @@ export default function EquipmentVariant({
                       </div>
 
                       <p className="text-[#111827] font-medium mb-3">
-                        {selected === plan.id.toString()
-                          ? price
-                            ? `$${price}/ mo`
-                            : "Select to see pricing"
-                          : "Select to see pricing"}
+                        {(() => {
+                          const displayPrice = isSelected ? (price ?? plan.list_price) : plan.list_price;
+                          if (!displayPrice) return "Included";
+                          return plan.recurring_invoice ? `$${displayPrice}/mo` : `$${displayPrice}`;
+                        })()}
                       </p>
 
                       <hr className="mb-3" />
@@ -342,7 +334,8 @@ export default function EquipmentVariant({
                                   <li
                                     key={i}
                                     className="flex items-center gap-2 ml-4 pr-3 cursor-pointer w-full"
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                      e.stopPropagation();
                                       if (selected) {
                                         setPrice(
                                           plan.list_price + value.price_extra,
@@ -379,7 +372,7 @@ export default function EquipmentVariant({
                                           },
                                         )}
                                       >
-                                        {isSelected ? "✓" : ""}
+                                        {isSelected ? <FaCheck /> : null}
                                       </span>
                                       <div className="flex items-center justify-between w-[92%]">
                                         <p>{value.name}</p>

@@ -15,7 +15,7 @@ export default function AppBar() {
       <Container className="py-4 lg:py-[27px] flex items-center justify-between">
         
         {/* Logo */}
-        <Link href="https://8c08gy3n6yjjxiu9-71993196726.shopifypreview.com/#shopify-section-template--19811140894902__services_multicolumn_VRNPCD">
+        <Link href={process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL ?? "#"}>
           <Image
             src="/app-logo.png"
             alt="DTEL Logo"

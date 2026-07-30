@@ -238,7 +238,7 @@ export default function SimCard() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState("");
-  const [echocashNumber, setEchoCashNumber] = useState<string>("");
+  const [ecocashNumber, setEcocashNumber] = useState<string>("");
 
   const generateCustomer = async () => {
     setSubmitLoader(true);
@@ -474,15 +474,15 @@ export default function SimCard() {
     passport?: string;
     customerId?: string;
     file?: string;
-    echoCashNumber?: string;
+    ecocashNumber?: string;
     email?: string;
   };
 
   const validate = () => {
     const newErrors: FormErrors = {};
     if (selectedMethod === "EcoCash") {
-      if (!echocashNumber.trim()) {
-        newErrors.echoCashNumber = "Echocash Number is required!";
+      if (!ecocashNumber.trim()) {
+        newErrors.ecocashNumber = "Echocash Number is required!";
       }
     }
     if (accountType === "existing") {
@@ -1002,16 +1002,16 @@ export default function SimCard() {
                         <input
                           type="text"
                           onChange={(event) => {
-                            setEchoCashNumber(event.target.value);
+                            setEcocashNumber(event.target.value);
                             setErrors({});
                           }}
-                          value={echocashNumber}
+                          value={ecocashNumber}
                           placeholder="Enter EcoCash number"
                           className="w-full rounded-lg border border-[#D1D5DB] px-4 py-3 outline-none focus:border-[#2F5D6C]"
                         />
-                        {errors.echoCashNumber && (
+                        {errors.ecocashNumber && (
                           <p className="text-red-500 text-xs mt-1 mb-3">
-                            {errors.echoCashNumber}
+                            {errors.ecocashNumber}
                           </p>
                         )}
                       </div>
@@ -1032,7 +1032,7 @@ export default function SimCard() {
                         setErrors(validationErrors);
                         return;
                       } else {
-                        params.set("echocashNumber", echocashNumber);
+                        params.set("ecocashNumber", ecocashNumber);
                         window.history.replaceState(
                           null,
                           "",

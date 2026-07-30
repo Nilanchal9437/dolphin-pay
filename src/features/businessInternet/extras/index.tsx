@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, ReactNode, useEffect } from "react";
 import { FaCheck } from "react-icons/fa";
+import { FiSmartphone } from "react-icons/fi";
 import cn from "classnames";
 import { redirect, useSearchParams, useRouter } from "next/navigation";
 import { Voucher } from "@/src/features/businessInternet/types/type";
@@ -52,12 +53,9 @@ export default function Extras() {
     const [bundleActive, setBundleActive] = useState<boolean>(false);
     const [mobilePlan, setMobilePlan] = useState<string>("standard");
     const [loading, setLoading] = useState(true);
-    const [entertainment, setEntertainment] = useState<Voucher[]>([]);
-    const [shopping, setShopping] = useState<Voucher[]>([]);
-    const [gaming, setGaming] = useState<Voucher[]>([]);
+    const [groupedVouchers, setGroupedVouchers] = useState<Record<string, Voucher[]>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [businessLoading, setBusinessLoading] = useState(false);
-    const [security, setSecurity] = useState<Voucher[]>([]);
     const [businessProducts, setBusinessProducts] =
       useState<ProductCategory | null>(null);
     const [selectedVariant, setSelectedVariant] = useState<
@@ -90,39 +88,25 @@ export default function Extras() {
       try {
         setLoading(true);
         const res = await getVouchers();
-        if (res.status) {
-          const entertainmentSelected = res?.data?.filter((item) =>
-            item.metadata.group.toLocaleLowerCase().includes("entertainment"),
-          );
-          const shoppingVoucher = res?.data?.filter((item) =>
-            item.metadata.group.toLocaleLowerCase().includes("shopping"),
-          );
-          const gamingVoucher = res?.data?.filter((item) =>
-            item.metadata.group.toLocaleLowerCase().includes("gaming"),
-          );
-          setEntertainment(entertainmentSelected as Voucher[]);
-          setShopping(shoppingVoucher as Voucher[]);
-          setGaming(gamingVoucher as Voucher[]);
-          setSecurity(
-            res?.data?.filter((item) =>
-              item.metadata.group.toLocaleLowerCase().includes("security"),
-            ) as Voucher[],
-          );
+        if (res.status && res.data) {
+          const consumerOnlyGroups = ["entertainment", "gaming"];
+          const grouped = res.data.reduce<Record<string, Voucher[]>>((acc, item) => {
+            const key = item.metadata.group.toLowerCase();
+            if (consumerOnlyGroups.includes(key)) return acc;
+            if (!acc[key]) acc[key] = [];
+            acc[key].push(item);
+            return acc;
+          }, {});
+          setGroupedVouchers(grouped);
           if (search.get("voucher")) {
             setSelectedVouchers(JSON.parse(`${search.get("voucher")}` || "[]"));
           }
         } else {
-          setEntertainment([]);
-          setSecurity([]);
-          setShopping([]);
-          setGaming([]);
+          setGroupedVouchers({});
         }
       } catch (error) {
         console.error("Error fetching vouchers:", error);
-        setEntertainment([]);
-        setSecurity([]);
-        setShopping([]);
-        setGaming([]);
+        setGroupedVouchers({});
       } finally {
         setLoading(false);
       }
@@ -156,12 +140,7 @@ export default function Extras() {
 
         const vouchers = JSON.parse(search.get("voucher") || "[]");
 
-        const allProducts = [
-          ...entertainment,
-          ...shopping,
-          ...gaming,
-          ...security,
-        ];
+        const allProducts = Object.values(groupedVouchers).flat();
 
         const updatedVouchers = await Promise.all(
           vouchers.map(async (voucher: any) => {
@@ -314,197 +293,64 @@ export default function Extras() {
           )}
         </div>
 
-        <Section title="ENTERTAINMENT">
-          {loading
-            ? [1, 2, 3, 4, 5].map((item, index) => <CardSkeleton key={index} />)
-            : entertainment.map((item) => (
-                <Card
-                  key={item.id}
-                  item={item}
-                  selected={selectedVouchers}
-                  onClick={() => {
-                    const searchParams = Object.fromEntries(search.entries());
-                    toggleVoucher(
-                      item.id,
-                      `${item.prices.find((p) => p.currency.toLowerCase() === "usd")?.value}`,
-                      item.name,
-                      item.metadata.logo_url,
-                      item.metadata.group,
-                    );
-                    const voucher = selectedVouchers.some(
-                      (v) => v.id === item.id,
-                    )
-                      ? selectedVouchers.filter((v) => v.id !== item.id)
-                      : [
-                          ...selectedVouchers,
-                          {
-                            id: item.id,
-                            price: `${item.prices.find((p) => p.currency.toLowerCase() === "usd")?.value}`,
-                            name: item.name,
-                            image: item.metadata.logo_url,
-                            group: item.metadata.group,
-                          },
-                        ];
-                    const params = new URLSearchParams(searchParams);
-                    params.set("voucher", JSON.stringify(voucher));
-                    const totalPrice = voucher.reduce(
-                      (sum, v) => sum + parseInt(v.price),
-                      0,
-                    );
-                    params.set("voucherPrice", `${totalPrice}`);
-                    window.history.replaceState(
-                      null,
-                      "",
-                      `${window.location.pathname}?${params.toString()}`,
-                    );
-                  }}
-                />
-              ))}
-        </Section>
-
-        <Section title="GAMING">
-          {loading
-            ? [1, 2, 3, 4].map((item, index) => <CardSkeleton key={index} />)
-            : gaming.map((item) => (
-                <Card
-                  key={item.id}
-                  item={item}
-                  selected={selectedVouchers}
-                  onClick={() => {
-                    const searchParams = Object.fromEntries(search.entries());
-                    toggleVoucher(
-                      item.id,
-                      `${item.prices.find((p) => p.currency.toLowerCase() === "usd")?.value}`,
-                      item.name,
-                      item.metadata.logo_url,
-                      item.metadata.group,
-                    );
-                    const voucher = selectedVouchers.some(
-                      (v) => v.id === item.id,
-                    )
-                      ? selectedVouchers.filter((v) => v.id !== item.id)
-                      : [
-                          ...selectedVouchers,
-                          {
-                            id: item.id,
-                            price: `${item.prices.find((p) => p.currency.toLowerCase() === "usd")?.value}`,
-                            name: item.name,
-                            image: item.metadata.logo_url,
-                            group: item.metadata.group,
-                          },
-                        ];
-                    const params = new URLSearchParams(searchParams);
-                    params.set("voucher", JSON.stringify(voucher));
-                    const totalPrice = voucher.reduce(
-                      (sum, v) => sum + parseInt(v.price),
-                      0,
-                    );
-                    params.set("voucherPrice", `${totalPrice}`);
-                    window.history.replaceState(
-                      null,
-                      "",
-                      `${window.location.pathname}?${params.toString()}`,
-                    );
-                  }}
-                />
-              ))}
-        </Section>
-
-        <Section title="SHOPPING">
-          {loading
-            ? [1, 2].map((item, index) => <CardSkeleton key={index} />)
-            : shopping.map((item) => (
-                <Card
-                  key={item.id}
-                  item={item}
-                  selected={selectedVouchers}
-                  onClick={() => {
-                    const searchParams = Object.fromEntries(search.entries());
-                    toggleVoucher(
-                      item.id,
-                      `${item.prices.find((p) => p.currency.toLowerCase() === "usd")?.value}`,
-                      item.name,
-                      item.metadata.logo_url,
-                      item.metadata.group,
-                    );
-                    const voucher = selectedVouchers.some(
-                      (v) => v.id === item.id,
-                    )
-                      ? selectedVouchers.filter((v) => v.id !== item.id)
-                      : [
-                          ...selectedVouchers,
-                          {
-                            id: item.id,
-                            price: `${item.prices.find((p) => p.currency.toLowerCase() === "usd")?.value}`,
-                            name: item.name,
-                            image: item.metadata.logo_url,
-                            group: item.metadata.group,
-                          },
-                        ];
-                    const params = new URLSearchParams(searchParams);
-                    params.set("voucher", JSON.stringify(voucher));
-                    const totalPrice = voucher.reduce(
-                      (sum, v) => sum + parseInt(v.price),
-                      0,
-                    );
-                    params.set("voucherPrice", `${totalPrice}`);
-                    window.history.replaceState(
-                      null,
-                      "",
-                      `${window.location.pathname}?${params.toString()}`,
-                    );
-                  }}
-                />
-              ))}
-        </Section>
-
-        <Section title="SECURITY">
-          {loading
-            ? [1, 2, 3, 4].map((item, index) => <CardSkeleton key={index} />)
-            : security.map((item) => (
-                <Card
-                  key={item.id}
-                  item={item}
-                  selected={selectedVouchers}
-                  onClick={() => {
-                    const searchParams = Object.fromEntries(search.entries());
-                    toggleVoucher(
-                      item.id,
-                      `${item.prices.find((p) => p.currency.toLowerCase() === "usd")?.value}`,
-                      item.name,
-                      item.metadata.logo_url,
-                      item.metadata.group,
-                    );
-                    const voucher = selectedVouchers.some(
-                      (v) => v.id === item.id,
-                    )
-                      ? selectedVouchers.filter((v) => v.id !== item.id)
-                      : [
-                          ...selectedVouchers,
-                          {
-                            id: item.id,
-                            price: `${item.prices.find((p) => p.currency.toLowerCase() === "usd")?.value}`,
-                            name: item.name,
-                            image: item.metadata.logo_url,
-                            group: item.metadata.group,
-                          },
-                        ];
-                    const params = new URLSearchParams(searchParams);
-                    params.set("voucher", JSON.stringify(voucher));
-                    const totalPrice = voucher.reduce(
-                      (sum, v) => sum + parseInt(v.price),
-                      0,
-                    );
-                    params.set("voucherPrice", `${totalPrice}`);
-                    window.history.replaceState(
-                      null,
-                      "",
-                      `${window.location.pathname}?${params.toString()}`,
-                    );
-                  }}
-                />
-              ))}
-        </Section>
+        {loading ? (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#DCDCDC]">
+              <div className="w-1 h-4 bg-[#f59e0b]" />
+              <div className="h-3 bg-gray-200 rounded w-24 animate-pulse" />
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {[1, 2, 3, 4, 5].map((_, index) => <CardSkeleton key={index} />)}
+            </div>
+          </div>
+        ) : Object.keys(groupedVouchers).length === 0 ? (
+          <div className="rounded-xl border border-dashed border-[#d1d5db] bg-[#f9fafb] p-8 flex flex-col items-center text-center mb-6">
+            <p className="font-exo font-bold text-[16px] text-[#111827]">Coming Soon</p>
+            <p className="text-sm text-[#6b7280] mt-1">Voucher add-ons will be available here soon.</p>
+          </div>
+        ) : (
+          Object.entries(groupedVouchers).map(([group, vouchers]) => {
+            const title = (vouchers[0]?.metadata?.group_label ?? group).toUpperCase();
+            return (
+              <Section key={group} title={title}>
+                {vouchers.map((item) => (
+                  <Card
+                    key={item.id}
+                    item={item}
+                    selected={selectedVouchers}
+                    onClick={() => {
+                      const currentSearchParams = Object.fromEntries(search.entries());
+                      toggleVoucher(
+                        item.id,
+                        `${item.prices.find((p) => p.currency.toLowerCase() === "usd")?.value}`,
+                        item.name,
+                        item.metadata.logo_url,
+                        item.metadata.group,
+                      );
+                      const voucher = selectedVouchers.some((v) => v.id === item.id)
+                        ? selectedVouchers.filter((v) => v.id !== item.id)
+                        : [
+                            ...selectedVouchers,
+                            {
+                              id: item.id,
+                              price: `${item.prices.find((p) => p.currency.toLowerCase() === "usd")?.value}`,
+                              name: item.name,
+                              image: item.metadata.logo_url,
+                              group: item.metadata.group,
+                            },
+                          ];
+                      const params = new URLSearchParams(currentSearchParams);
+                      params.set("voucher", JSON.stringify(voucher));
+                      const totalPrice = voucher.reduce((sum, v) => sum + parseInt(v.price), 0);
+                      params.set("voucherPrice", `${totalPrice}`);
+                      window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+                    }}
+                  />
+                ))}
+              </Section>
+            );
+          })
+        )}
 
         {/* Bundle */}
         {/* <div className="border-2 border-dashed border-[#f59e0b] rounded-xl p-5 mt-6 bg-[#fff7ed]">
@@ -518,7 +364,7 @@ export default function Extras() {
           >
             <div className="flex gap-4">
               <div className="bg-[#FDECCC] rounded-lg py-4 px-2 text-2xl">
-                📱
+                <FiSmartphone />
               </div>
               <div className="flex-1">
                 <p className="font-exo font-bold text-[20px] leading-[1.2] tracking-normal">
@@ -540,7 +386,7 @@ export default function Extras() {
                   : "bg-[#f59e0b] text-white border-[#f59e0b] opacity-20"
               }`}
             >
-              {bundleActive ? "✓ Bundle Active" : "Add Mobile Plan"}
+              {bundleActive ? <><FaCheck className="inline mr-1" />Bundle Active</> : "Add Mobile Plan"}
             </button>
           </div>
 

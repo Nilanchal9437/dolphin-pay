@@ -1,8 +1,7 @@
-// lib/serverToken.ts
 import { cookies } from "next/headers";
 import axios, { InternalAxiosRequestConfig } from "axios";
+import { generateVoucherToken } from "./generateToken";
 
-// 👉 Decode JWT expiry (Node-safe)
 const isTokenExpired = (token: string): boolean => {
   try {
     const payload = JSON.parse(
@@ -14,21 +13,15 @@ const isTokenExpired = (token: string): boolean => {
   }
 };
 
-export const getServerAccessToken = async (): Promise<string | null> => {
-  const cookieStore = cookies();
-  let token = (await cookieStore).get("token")?.value;
+export const getServerAccessToken = async (): Promise<string> => {
+  const cookieStore = await cookies();
+  const existing = cookieStore.get("token")?.value;
 
-  // ✅ If token exists and valid → use it
-  if (token && !isTokenExpired(token)) {
-    return token;
+  if (existing && !isTokenExpired(existing)) {
+    return existing;
   }
 
-  // ❗ Otherwise fetch new token
-  const res = await axios
-    .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/apis/token`)
-    .then((req) => req.data);
-    
-  return res.token;
+  return generateVoucherToken();
 };
 
 const VoucherAxios = axios.create({
@@ -38,11 +31,7 @@ const VoucherAxios = axios.create({
 VoucherAxios.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const token = await getServerAccessToken();
-    
-    if (token) {
-      config.headers.set("Authorization", `Bearer ${token}`);
-    }
-
+    config.headers.set("Authorization", `Bearer ${token}`);
     return config;
   },
   (error) => Promise.reject(error),
